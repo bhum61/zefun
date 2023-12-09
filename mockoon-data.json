@@ -1,0 +1,27 @@
+{
+    "uuid": "5d004e2c-6055-41bc-b0ac-4d0c064dddd1",
+    "lastMigration": 29,
+    "name": "Tutorial - Generate mock data",
+    "endpointPrefix": "",
+    "latency": 0,
+    "port": 3001,
+    "routes": [
+      {
+        "uuid": "5d004e2c-6055-41bc-b0ac-4d0c064dddd1",
+        "documentation": "Get a list of songs (JSON)",
+        "method": "get",
+        "endpoint": "songs",
+        "enabled": true,
+        "responseMode": null,
+        "type": "http",
+        "responses": [
+          {
+            "id":1,
+            "title":"Sekota",
+            "artist":"Nuraddis Seid",
+            "genre":"eskita"
+          }
+        ]
+      }
+    ]
+}

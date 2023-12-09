@@ -1,34 +1,10 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import type { RootState } from './../../store';
 
-export interface SongType {
-    id: number;
-    title: string;
-    artist: string;
-    album: string;
-    genre: string;    
-} 
 
 
-export const genres: Array<string> = [
-    "Eskita",
-    "Guayla",
-    "Regeda",
-    "Tezita",
-    "Anchihoye",
-    "Bati",
-    "Ambassel",
-]
-
-const initialState : {songs: Array<SongType>} = {
+const initialState : {songs: Array<ISong>} = {
     songs: [
-        {
-            id: 7,
-            title: "Welloyewa",
-            artist: "Seyumkal Gebre",
-            album: "2015",
-            genre: "Eskita"
-        },
     ]
 };
 
@@ -37,7 +13,7 @@ const songSlice = createSlice({
     initialState,
 
     reducers: {
-        insertSong: (state, action: PayloadAction<SongType>) => {
+        insertSong: (state, action: PayloadAction<ISong>) => {
             state.songs.push(action.payload);
         },
         updateSong: (state) => {
@@ -46,7 +22,7 @@ const songSlice = createSlice({
         deleteSong: (state, action: PayloadAction<number>) => {
             console.log(action);
 
-            state.songs.map((song: SongType) => song.id !== action.payload);
+            state.songs.map((song: ISong) => song.id !== action.payload);
         },
         editSong: (state) => {
 

@@ -1,23 +1,80 @@
 import React from "react";
-import { deleteSong, SongType } from "./SongSlice";
 
 import { useAppDispatch } from "../../hooks";
+import { DELETE_SONG_DELETE } from "../../saga/actions";
+import { Link } from "react-router-dom";
+import { faTrash, faPen, faPlay } from "@fortawesome/free-solid-svg-icons";
+import { styled } from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export const Song: React.FC<SongType> = ({id, title, artist}) => {
+export interface ISong {
+    _id: string;
+    title: string;
+    artist: string;
+    album: string;
+    genre: string;    
+} 
+
+
+export const genres: Array<string> = [
+    "Eskita",
+    "Guayla",
+    "Regeda",
+    "Tezita",
+    "Anchihoye",
+    "Bati",
+    "Ambassel",
+]
+
+const StyledSong = styled.div `
+    display: flex;
+    border-bottom: 1px solid #CCC;
+
+    span {
+        padding-right: 1em;
+        display: flex;
+        align-items: center;
+    }
+    `
+    
+const StyledSpan = styled.span `
+    
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1em;
+    padding-left: 4em;
+    // margin-right: auto;
+`
+
+export const Song: React.FC<ISong> = ({_id, title, artist}) => {
 
     const dispatch = useAppDispatch();
 
-    const deleteHandler = (id: number) => {
-        
-        dispatch(deleteSong(id));
-    }
+    const deleteHandler = (id: string) => {
+        const action = DELETE_SONG_DELETE(id);
 
-    return <div key={id}>
-        <h3>{title}</h3>
-        <p>{artist}</p>
-        <>
-            <button className='btn btn-info'>Edit</button>
-            <button className='btn btn-danger' onClick={() => deleteHandler(id)}>Delete</button>
-        </>
-    </div>;
+        
+        dispatch(action);
+    }
+    
+    return (        
+        <StyledSong>
+            <span>
+                <FontAwesomeIcon icon={faPlay} />
+            </span>
+            <h4>{title} by <small>{artist}</small></h4>
+       
+            <StyledSpan>
+
+                <Link to={`/edit/song/${_id}`}><FontAwesomeIcon icon={faPen}  /></Link>
+                {/* <button className='btn btn-info' onClick={() => editHandler(_id)}>Edit</button> */}
+                <Link to='#' onClick={() => deleteHandler(_id)}>
+                    <FontAwesomeIcon icon={faTrash} />
+                </Link>
+
+            </StyledSpan>
+        </StyledSong>
+    );
 }
