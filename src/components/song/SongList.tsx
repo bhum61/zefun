@@ -42,7 +42,7 @@ const SongList = () => {
             { error && <p>Error: {error.message || "Unknown error"}</p>}
 
 
-            <StyledLink to={`/new/song/`}>
+            <StyledLink to='/new/song/'>
                 New
                 <FontAwesomeIcon icon={faPlusSquare} />
             </StyledLink>

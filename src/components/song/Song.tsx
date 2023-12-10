@@ -35,7 +35,7 @@ const StyledSong = styled.div `
         display: flex;
         align-items: center;
     }
-    `
+`
     
 const StyledSpan = styled.span `
     
@@ -46,6 +46,15 @@ const StyledSpan = styled.span `
     gap: 1em;
     padding-left: 4em;
     // margin-right: auto;
+    
+    
+    svg {
+        color: ${props => props.theme.color};
+    }
+
+    svg:hover {
+        color: ${props => props.theme.textColor};;
+    }
 `
 
 export const Song: React.FC<ISong> = ({_id, title, artist}) => {

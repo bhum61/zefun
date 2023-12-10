@@ -1,42 +1,68 @@
 import { createReducer } from "@reduxjs/toolkit";
 
-import { GET_SONGS_SUCCESS, GET_SONGS_FAILURE, POST_SONG_FAILURE, POST_SONG_SUCCESS, DELETE_SONG_FAILURE, DELETE_SONG_SUCCESS, EDIT_SONG_EDIT, THEME_TOGGLE, GET_STATS_SUCCESS, GET_STATS_FAILURE } from "./saga/actions";
+import { GET_SONGS_SUCCESS, GET_SONGS_FAILURE, POST_SONG_FAILURE, POST_SONG_SUCCESS, DELETE_SONG_FAILURE, DELETE_SONG_SUCCESS, EDIT_SONG_EDIT, THEME_TOGGLE, GET_STATS_SUCCESS, GET_STATS_FAILURE, PUT_SONG_SUCCESS } from "./saga/actions";
 import { ISong} from "./components/song/Song";
 
 const initialState = {
     songs: [],
     stats: {},
     selectedSong: undefined,
-    error: undefined
+    error: undefined,
+    loading: true
 };
 
 const songsReducer = createReducer(initialState, (builder) => {
     builder.addCase(GET_SONGS_SUCCESS, (state, action: any) => {
+
+        state.loading = false;
         state.error = undefined;
         state.songs = action.songs;
 
     }).addCase(GET_SONGS_FAILURE, (state, action) => {
+
+        state.loading = false;
         state.error = action.error;
 
     }).addCase(POST_SONG_SUCCESS, (state, action) => {
+
+        state.loading = false;
         state.error = undefined;
         state.songs.push(action.song);
-          
+
     }).addCase(POST_SONG_FAILURE, (state, action: any) => {
+
+        state.loading = false;
         state.error = action.error;
 
+    }).addCase(PUT_SONG_SUCCESS, (state, action) => {
+
+        state.loading = false;
+        state.error = undefined;
+
+        const songIndex = state.songs.findIndex(song => song._id === action.song._id);
+        console.log("SongIndex: ", songIndex);
+
+        state.songs[songIndex] = action.song;
+
     }).addCase(DELETE_SONG_SUCCESS, (state, action: any) => {
+
+        state.loading = false;
         state.error = undefined;
         state.songs = state.songs.filter((song: ISong) => song._id !== action.payload);
 
     }).addCase(DELETE_SONG_FAILURE, (state, action: any) => {
 
+        state.loading = false;
         state.error = action.error;
+
     }).addCase(GET_STATS_SUCCESS, (state, action: any) => {
 
+        state.loading = false;
         state.stats = action.data;
+
     }).addCase(GET_STATS_FAILURE, (state, action: any) => {
 
+        state.loading = false;
         state.error = action.error;
     });
 });

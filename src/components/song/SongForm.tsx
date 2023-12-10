@@ -1,36 +1,99 @@
-import { useState } from "react";
 import { ISong, genres } from "./Song";
-import { useAppDispatch, useAppSelector } from "../../hooks";
+import { useAppSelector } from "../../hooks";
 import { POST_SONG_POST } from "../../saga/actions";
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { styled } from "styled-components";
+import { ModalCenter  } from "../../layouts/MainLayoutProvider";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+
+const StyledDiv = styled.div`
+display: flex;
+flex-wrap: wrap;
+flex-basis: 50%;
+justify-content: center;
+background-color: ${props => props.theme.modalBackgroundColor};
+padding: 1em;
+border: 1px solid #ccc;
+border-radius: 5px;
+
+.error {
+    flex-basis: 100%;
+    border: 1px solid red;
+}
+
+.error-txt {
+    color: red;
+}
+`
+
+const StyledForm = styled.form `
+display: flex;
+flex-basis: 100%;
+flex-wrap: wrap;
+
+div {
+    display: flex;
+}
+
+label, input, button, select {
+    flex-basis: 100%;
+}
+
+input, button, select {
+    border: none;
+    border-radius: 3px;
+    height: 2em;
+    margin-bottom: 1em;
+    background-image: linear-gradient(to right, #290035, #360145, #440255, #530366, #620478);
+    color: #fff;
+    font-weight: bold;
+    padding: 0.5em;
+}
+
+select option {
+    color: #000;
+    font-weight: bold;
+    height: 2em;
+    padding: 0.5em;
+    margin-bottom: 1em;
+}
+
+
+button {
+    &:hover {
+        background-color: #22AA00;
+    }
+}
+`
 
 export const SongForm = () => {
     const { songId } = useParams();
 
-    const dispatch = useAppDispatch();
+    const dispatch = useDispatch();
     
-    const error = useAppSelector((state) => {return state.rootReducer.songReducer.error;});
-    const selectedSong = useAppSelector((state) => { return state.rootReducer.songReducer.songs.find((song: ISong) => song._id === songId);}) as ISong;
+    const error = useAppSelector(state => state.rootReducer.songReducer.error);
+    const selectedSong = useAppSelector(state => state.rootReducer.songReducer.songs.find((song: ISong) => song._id === songId));
+    const networkLoading = useAppSelector(state => state.rootReducer.songReducer.loading);
 
 
     const [_id, _] = useState(songId);
     const [title, setTitle] = useState(selectedSong?.title);
     const [artist, setArtist] = useState(selectedSong?.artist);
     const [album, setAlbum] = useState(selectedSong?.album);
-    const [genre, setGenre] = useState(selectedSong?.genre || genres[0]);
+    const [genre, setGenre] = useState(selectedSong?.genre);
+    const [loading, setLoading] = useState(false);
 
+    // console.log("SELECTED SONG: ", songId, selectedSong);
 
-    console.log("SELECTED SONG: ", songId, selectedSong);
-
-    const errorParams = ['title','genre'];
-
-    const onTitleChange = (e: ChangeEvent) => setTitle(e.target.value);
-    const onArtistChange = (e: ChangeEvent) => setArtist(e.target.value);
-    const onAlbumChange = (e: ChangeEvent) => setAlbum(e.target.value);
-    const onGenreChange = (e: ChangeEvent) => setGenre(e.target.value);
+    const onTitleChange = (e: Event) => setTitle(e.target.value);
+    const onArtistChange = (e: Event) => setArtist(e.target.value);
+    const onAlbumChange = (e: Event) => setAlbum(e.target.value);
+    const onGenreChange = (e: Event) => setGenre(e.target.value);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
 
         const newSong: ISong = {
             _id,
@@ -40,87 +103,134 @@ export const SongForm = () => {
             genre
         } as ISong;
 
-        const action = POST_SONG_POST(newSong);
+        const callback = data => {
+            if(data === true)
+                useNavigate('/');    
+        };
 
-        // console.log(action);
-        dispatch(action);
+
+        const action = POST_SONG_POST(newSong, callback);
+
+        console.log(action);
+
+        setLoading(true);
+        dispatch(action)
     };
 
+
+    const errorInputs = error?.response?.data?.errors?.map((err) => {
+
+        return err?.param;
+    });
+
+
     return (
-        <div>
-        { error?.response?.data?.errors && 
-                    
-            error.response.data.errors.map((err) => {
-                return <p>{err.msg}</p>
-            })
-        }
 
-        <form id="new-song-form" className={`form-group ${errorParams ? 'has-error' : ''}`} 
+        <ModalCenter>
+            <StyledDiv>
+                <>
+                    {error &&
+                        <span>
+                            <p className="error-txt">{error.message}</p>
+                        </span> 
+                    }
+                </>
+            <StyledForm id="new-song-form"  
                 onSubmit={handleSubmit}>
-                <div className='col-md-6'>
-                    <label className='form-label' 
-                        htmlFor='title-input'>Title</label>
-                    <input hidden={true}
-                        type='text'
-                        id='id-input'
-                        name='_id'
-                        value={selectedSong?._id} />
+                        <input hidden={true}
+                            type='text'
+                            id='id-input'
+                            name='_id'
+                            value={_id} />
 
-                    <input className='form-control' 
-                        onChange={onTitleChange} 
-                        type='text' 
-                        id='title-input' 
-                        name='title'
-                        value={selectedSong?.title}/>
-                </div>
-                <div className='col-md-6'>
-                    <label className='form-label' htmlFor='artist-input'>Artist</label>
-                    <input className='form-control' 
-                        onChange={onArtistChange} 
-                        type='text' 
-                        id='artist-input' 
-                        name='artist'
-                        value={selectedSong?.artist} />
-                </div>
-                <div className='col-md-6'>
-                    <label className='form-label' 
-                        htmlFor='album-input'>Album</label>
-                    <input className='form-control' 
-                        onChange={onAlbumChange} 
-                        type='text' 
-                        id='album-input' 
-                        name='album'
-                        value={selectedSong?.album} />
-                </div>
-                <div className='col-md-6'>
-                    <label className='form-label' 
-                        htmlFor='genre-input'>Genre</label>
+                        <label htmlFor='title-input'>
+                            Title
+                            <br/>
+                            <small 
+                                hidden={
+                                    !errorInputs?.includes('title')
+                                }
+                                className="error-txt" >
+                                please enter valid title
+                            </small>
+                        </label>
 
-                    <select 
-                        className='form-control' 
-                        name='genre'
-                        id='genre-input'
-                        onChange={onGenreChange}
-                        value={selectedSong?.genre}>
-                
-                        {genres && genres.map((genre: string) => (
-                            <option 
-                                key={genre} 
-                                id={genre} 
-                                value={genre}>
+                        <input
+                            onChange={onTitleChange} 
+                            type='text' 
+                            id='title-input' 
+                            name='title'
+                            className={
+                                errorInputs?.includes('title')?'error':''
+                            }
+                            value={title}/>
 
-                                    {genre}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                        <label htmlFor='artist-input'>
+                            Artist
+                            <br/>
+                            <small
+                                hidden={
+                                    !errorInputs?.includes('artist')
+                                } 
+                                className="error-txt">please enter valid artist</small>
+                        </label>
+                        <input 
+                            onChange={onArtistChange} 
+                            type='text' 
+                            id='artist-input' 
+                            name='artist'
+                            className={
+                                errorInputs?.includes('artist')?'error':''
+                            }
+                            value={artist} />
+                        <label
+                            htmlFor='album-input'>
+                                Album
+                                <br/>
+                            <small 
+                                hidden={
+                                    !errorInputs?.includes('album')
+                                }
+                                className="error-txt">please enter valid album</small>
+                        </label>
+                        <input 
+                            onChange={onAlbumChange} 
+                            type='text' 
+                            id='album-input' 
+                            name='album'
+                            className={
+                                errorInputs?.includes('album')?'error':''
+                            }
+                            value={album} />
 
-                <div className='row'></div>
+                        <label 
+                            htmlFor='genre-input'>
+                            Genre
+                        </label>
 
-                <div className='col-md-6'>
-                    <button type='submit'>{selectedSong?'Update':'Add'}</button>
-                </div>
-        </form>
-    </div>
+                        <select 
+                            name='genre'
+                            id='genre-input'
+                            onChange={onGenreChange}
+                            defaultValue={genre}>
+                    
+                            {genres && genres.map((genre: string) => (
+                                <option 
+                                    key={genre} 
+                                    id={genre} 
+                                    value={genre}>
+
+                                        {genre}
+                                </option>
+                            ))}
+                        </select>
+                        <hr/>
+
+                        <button type='submit' disabled={loading && networkLoading}>
+                            {selectedSong?'Update':'Add'}
+                        </button>
+            </StyledForm>
+        </StyledDiv>
+    </ModalCenter>
     )
 };

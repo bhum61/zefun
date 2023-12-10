@@ -3,6 +3,7 @@ import { styled } from "styled-components";
 import { faHome, faMusic, faUser, faGuitar, faMoon } from '@fortawesome/free-solid-svg-icons';
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { THEME_TOGGLE } from "../../saga/actions";
+import { Link } from "react-router-dom";
 
 const StyledNav = styled.div`
     background-color: ${props => props.theme.backgroundColor};
@@ -21,8 +22,11 @@ const StyledList = styled.ul `
     list-style: none;
     display: flex;
 
-    &:hover {
+    a {
+        color: ${props => props.theme.color};;
+        text-decoration: none;
     }
+
 `
 
 const StyledLI = styled.li `
@@ -37,17 +41,18 @@ const StyledLI = styled.li `
 
     svg {
         height: 100%;
-        color: #800080;
+        color: ${props => props.theme.textColor}
     }
 
     &:hover {
         filter: grayscale(0%) opacity(1);
-        color: #800080;
+        color: ${props => props.theme.textColor};
     }
 
     &:last-child {
         margin-top: auto;
     }
+
 
 `
 
@@ -77,21 +82,32 @@ export default () => {
             <StyledNav>
 
                 <StyledList>
-                    <StyledLI><FontAwesomeIcon icon={faHome} />
-                        <StyledLabel>Home</StyledLabel>
-                    </StyledLI>
-                    <StyledLI>
-                        <FontAwesomeIcon icon={faMusic} />
-                        <StyledLabel>Songs</StyledLabel>
-                    </StyledLI>
-                    <StyledLI>
-                        <FontAwesomeIcon icon={faUser} />
-                        <StyledLabel>Artists</StyledLabel>
-                    </StyledLI>
-                    <StyledLI>
-                        <FontAwesomeIcon icon={faGuitar} />
-                        <StyledLabel>Genre</StyledLabel>
-                    </StyledLI>
+                    <Link to='/'>
+                        <StyledLI><FontAwesomeIcon icon={faHome} />
+                            <StyledLabel>Home</StyledLabel>
+                        </StyledLI>
+                    </Link>
+
+                    <Link to='/song'>
+                        <StyledLI>
+                            <FontAwesomeIcon icon={faMusic} />
+                            <StyledLabel>Songs</StyledLabel>
+                        </StyledLI>
+                    </Link>
+                    
+                    <Link to='/'>
+                        <StyledLI>
+                            <FontAwesomeIcon icon={faUser} />
+                            <StyledLabel>Artists</StyledLabel>
+                        </StyledLI>
+                    </Link>
+
+                    <Link to='/'>
+                        <StyledLI>
+                            <FontAwesomeIcon icon={faGuitar} />
+                            <StyledLabel>Genre</StyledLabel>
+                        </StyledLI>
+                    </Link>
                     <StyledLI onClick={toggleTheme}>
                         <FontAwesomeIcon icon={faMoon} />
                         <StyledLabel>{selectedTheme}</StyledLabel>

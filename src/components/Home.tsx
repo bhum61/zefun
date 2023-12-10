@@ -1,9 +1,10 @@
 import { styled } from "styled-components"
 import SongList from "./song/SongList"
 import { useAppSelector } from "../hooks"
+import { Pane } from "../layouts/MainLayoutProvider"
 
 
-const StyledDiv = styled.div`
+const StyledDiv = styled(Pane)`
 height: fit-content;
 `
 

@@ -1,6 +1,6 @@
 import { call, put, takeEvery } from "redux-saga/effects";
 import axios from "axios"
-import { DELETE_SONG_DELETE, DELETE_SONG_FAILURE, DELETE_SONG_SUCCESS, GET_SONGS_FAILURE, GET_SONGS_SUCCESS, GET_STATS_FAILURE, GET_STATS_SUCCESS, POST_SONG_FAILURE, POST_SONG_POST, POST_SONG_SUCCESS, THEME_TOGGLE } from "./actions";
+import { DELETE_SONG_DELETE, DELETE_SONG_FAILURE, DELETE_SONG_SUCCESS, GET_SONGS_FAILURE, GET_SONGS_SUCCESS, GET_STATS_FAILURE, GET_STATS_SUCCESS, POST_SONG_FAILURE, POST_SONG_POST, POST_SONG_SUCCESS, PUT_SONG_SUCCESS, THEME_TOGGLE } from "./actions";
 import { ISong } from "../components/song/Song";
 
 const API_BASE_URL = 'http://localhost:5000/api';
@@ -41,6 +41,7 @@ const postSong = (song: ISong) => {
         headers: axiosHeaders
     }).then((res) => {
 
+
         return res.data;
 
     }).catch((error) => {
@@ -79,14 +80,20 @@ function* deleteSongGen({payload}:{payload: string}) {
 }
 
 
-function* postSongGen({payload}: {payload: ISong}) {
+function* postSongGen({payload, callback}: {payload: ISong}) {
     try {
 
         const createdSong = yield call(postSong, payload);
-        yield put({type: POST_SONG_SUCCESS, song: createdSong})
+        callback?.(true);
+
+        if(payload._id) yield put({type: PUT_SONG_SUCCESS, song: createdSong});
+        else yield put({type: POST_SONG_SUCCESS, song: createdSong})
+        
     } catch (error) {
 
         console.log(error);
+
+        callback?.(error);
         yield put({type: POST_SONG_FAILURE, error});
     }
 }

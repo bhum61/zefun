@@ -1,6 +1,7 @@
 import styled, { ThemeProvider } from "styled-components"
 import NavBar from "../components/navbar/NavBar";
 import { useAppSelector } from "../hooks";
+import { pureFinalPropsSelectorFactory } from "react-redux/es/connect/selectorFactory";
 
 
 const Container = styled.div`
@@ -20,17 +21,29 @@ const Pane = styled.div`
     height: fit-content;
 `
 
+const ModalCenter = styled.div`
+    display: flex;
+    flex-basis: 100%;;
+    flex-direction: row;
+    gap: 1em;
+    align-content: space-between;
+    flex-wrap: wrap;
+    justify-content: center;
+`
+
 const theme = {
     dark: {
-        backgroundColor: "#000",
+        backgroundColor: "#040D12",
+        modalBackgroundColor: "#000",
         color: "#fff",
-        textColor: "#6600FF"
+        textColor: "#C312EB"
     },
 
     light: {
         backgroundColor: "#fff",
-        color: "#000",
-        textColor: "#6600FF"
+        modalBackgroundColor: "#fff",
+        color: "#0055CC",
+        textColor: "#000"
     }
 };
 
@@ -57,3 +70,5 @@ export default ({mainPanel: MainPanel}) => {
         </ThemeProvider>
     );
 }
+
+export { Pane, ModalCenter }
