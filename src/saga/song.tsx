@@ -2,8 +2,9 @@ import { call, put, takeEvery } from "redux-saga/effects";
 import axios from "axios"
 import { DELETE_SONG_DELETE, DELETE_SONG_FAILURE, DELETE_SONG_SUCCESS, GET_SONGS_FAILURE, GET_SONGS_SUCCESS, GET_STATS_FAILURE, GET_STATS_SUCCESS, POST_SONG_FAILURE, POST_SONG_POST, POST_SONG_SUCCESS, PUT_SONG_SUCCESS, THEME_TOGGLE } from "./actions";
 import { ISong } from "../components/song/Song";
+import { StatsType } from "../store";
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'http://172.18.0.2:5000/api';
 
 const axiosHeaders = {
     'X-ZEFUN-API-KEY':'qwertasdf'
@@ -15,7 +16,6 @@ const songsFetch = () => {
     }).then((res) => {
 
         return res.data;
-
     }).catch((err) => {
         throw err;
     })
@@ -27,7 +27,6 @@ const songsFetchStats = () => {
     }).then((res) => {
 
         return res.data;
-
     }).catch((err) => {
         throw err;
     })
@@ -35,15 +34,14 @@ const songsFetchStats = () => {
 
 const postSong = (song: ISong) => {
 
-    const axiosMethod = song._id?axios.put:axios.post;
+    const axiosMethod = song._id?axios.put<ISong>:axios.post<ISong>;
 
     return axiosMethod(`${API_BASE_URL}/song${(song._id && '/'+song._id) || ''}`, song, {
         headers: axiosHeaders
-    }).then((res) => {
+    }).then((res: {data: ISong}) => {
 
 
         return res.data;
-
     }).catch((error) => {
                 
         throw error;
@@ -80,20 +78,17 @@ function* deleteSongGen({payload}:{payload: string}) {
 }
 
 
-function* postSongGen({payload, callback}: {payload: ISong}) {
+function* postSongGen({payload}: {payload: ISong}) {
     try {
 
-        const createdSong = yield call(postSong, payload);
-        callback?.(true);
+        const createdSong: ISong = yield call(postSong, payload);
 
         if(payload._id) yield put({type: PUT_SONG_SUCCESS, song: createdSong});
         else yield put({type: POST_SONG_SUCCESS, song: createdSong})
-        
+
     } catch (error) {
 
         console.log(error);
-
-        callback?.(error);
         yield put({type: POST_SONG_FAILURE, error});
     }
 }
@@ -101,11 +96,12 @@ function* postSongGen({payload, callback}: {payload: ISong}) {
 
 function* getSongsFetchGen() {
     try {
-        const songs = yield call(songsFetch);
+        const songs: ISong[] = yield call(songsFetch);
         
         yield put({type: GET_SONGS_SUCCESS, songs});
     } catch (error) {
         
+        console.log(error);
         yield put({type: GET_SONGS_FAILURE, error});
     }
 }
@@ -119,7 +115,7 @@ function* toggleTheme() {
 
 function* getStatsGen() {
     try {
-        const data = yield call(songsFetchStats);
+        const data: StatsType = yield call(songsFetchStats);
 
         yield put({type: GET_STATS_SUCCESS, data});
     } catch (error) {

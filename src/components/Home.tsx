@@ -1,12 +1,6 @@
 import { styled } from "styled-components"
 import SongList from "./song/SongList"
 import { useAppSelector } from "../hooks"
-import { Pane } from "../layouts/MainLayoutProvider"
-
-
-const StyledDiv = styled(Pane)`
-height: fit-content;
-`
 
 
 const StyledBox = styled.div `
@@ -27,28 +21,28 @@ h3 {
 export default () => {
 
     const stats = useAppSelector((state) => state.rootReducer.songReducer.stats);
-    const {count: songsCount, albums: albumsCount, artists: artistsCount, genres: genreCount } = stats?.stats?stats.stats[0]:{};
+    const {count: songsCount = 0 , albums: albumsCount = 0, artists: artistsCount = 0, genres: genreCount = 0 } = stats?.stats? stats?.stats[0]:{};
 
     return (
         <>
             <>
                 <StyledBox>
-                    <h1>{songsCount || 0}+</h1>
+                    <h1>{songsCount}+</h1>
                     <hr/>
                     <h4>Songs</h4>
                 </StyledBox>
                 <StyledBox>
-                    <h1>{artistsCount || 0}+</h1>
+                    <h1>{artistsCount}+</h1>
                     <hr/>
                     <h4>Artists</h4>
                 </StyledBox>
                 <StyledBox>
-                    <h1>{albumsCount || 0}+</h1>
+                    <h1>{albumsCount}+</h1>
                     <hr/>
                     <h4>Albums</h4>
                 </StyledBox>
                 <StyledBox>
-                    <h1>{genreCount || 0}+</h1>
+                    <h1>{genreCount}+</h1>
                     <hr/>
                     <h4>Genres</h4>
                 </StyledBox>

@@ -1,53 +1,72 @@
 import { createReducer } from "@reduxjs/toolkit";
 
-import { GET_SONGS_SUCCESS, GET_SONGS_FAILURE, POST_SONG_FAILURE, POST_SONG_SUCCESS, DELETE_SONG_FAILURE, DELETE_SONG_SUCCESS, EDIT_SONG_EDIT, THEME_TOGGLE, GET_STATS_SUCCESS, GET_STATS_FAILURE, PUT_SONG_SUCCESS } from "./saga/actions";
+import { GET_SONGS_SUCCESS, GET_SONGS_FAILURE, POST_SONG_FAILURE, POST_SONG_SUCCESS, DELETE_SONG_FAILURE, DELETE_SONG_SUCCESS, THEME_TOGGLE, GET_STATS_SUCCESS, GET_STATS_FAILURE, PUT_SONG_SUCCESS } from "./saga/actions";
 import { ISong} from "./components/song/Song";
+import { StatsType } from "./store";
+
+
+type ErrorType = {
+    message: string,
+    response: {
+        data: {
+            errors:  {
+                    param: string
+            }[]            
+        }
+    }
+}
+
 
 const initialState = {
-    songs: [],
-    stats: {},
+    songs:  [] as Array<ISong>,
+    stats: {} as StatsType,
     selectedSong: undefined,
-    error: undefined,
+    error: {} as ErrorType,
     loading: true
 };
+
 
 const songsReducer = createReducer(initialState, (builder) => {
     builder.addCase(GET_SONGS_SUCCESS, (state, action: any) => {
 
         state.loading = false;
-        state.error = undefined;
+        state.error = {} as ErrorType;
+
         state.songs = action.songs;
 
-    }).addCase(GET_SONGS_FAILURE, (state, action) => {
+    }).addCase(GET_SONGS_FAILURE, (state, action: any) => {
 
         state.loading = false;
-        state.error = action.error;
+        state.error = action?.error;
 
-    }).addCase(POST_SONG_SUCCESS, (state, action) => {
+    }).addCase(POST_SONG_SUCCESS, (state, action: any) => {
 
         state.loading = false;
-        state.error = undefined;
-        state.songs.push(action.song);
+        state.error = {} as ErrorType;
+
+        const createdSong: ISong = action?.song;
+        state.songs.push(createdSong);
 
     }).addCase(POST_SONG_FAILURE, (state, action: any) => {
 
         state.loading = false;
         state.error = action.error;
 
-    }).addCase(PUT_SONG_SUCCESS, (state, action) => {
+    }).addCase(PUT_SONG_SUCCESS, (state, action: any) => {
 
         state.loading = false;
-        state.error = undefined;
+        state.error = {} as ErrorType;
 
-        const songIndex = state.songs.findIndex(song => song._id === action.song._id);
-        console.log("SongIndex: ", songIndex);
+        const updatedSong: ISong = action.song;
 
-        state.songs[songIndex] = action.song;
-
+        const songIndex = state.songs.findIndex((song: ISong) => song._id === action.song._id);
+        
+        state.songs[songIndex] = updatedSong;
     }).addCase(DELETE_SONG_SUCCESS, (state, action: any) => {
 
         state.loading = false;
-        state.error = undefined;
+        state.error = {} as ErrorType;
+
         state.songs = state.songs.filter((song: ISong) => song._id !== action.payload);
 
     }).addCase(DELETE_SONG_FAILURE, (state, action: any) => {

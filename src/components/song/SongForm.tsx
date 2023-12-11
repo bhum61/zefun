@@ -1,10 +1,10 @@
 import { ISong, genres } from "./Song";
 import { useAppSelector } from "../../hooks";
 import { POST_SONG_POST } from "../../saga/actions";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { styled } from "styled-components";
 import { ModalCenter  } from "../../layouts/MainLayoutProvider";
-import { useState } from "react";
+import { ChangeEventHandler, useState } from "react";
 import { useDispatch } from "react-redux";
 
 const StyledDiv = styled.div`
@@ -67,13 +67,14 @@ button {
 }
 `
 
-export const SongForm = () => {
+
+const SongForm = () => {
     const { songId } = useParams();
 
     const dispatch = useDispatch();
     
     const error = useAppSelector(state => state.rootReducer.songReducer.error);
-    const selectedSong = useAppSelector(state => state.rootReducer.songReducer.songs.find((song: ISong) => song._id === songId));
+    const selectedSong = useAppSelector<ISong | undefined>(state => state.rootReducer.songReducer.songs.find((song: ISong) => song._id === songId));
     const networkLoading = useAppSelector(state => state.rootReducer.songReducer.loading);
 
 
@@ -81,15 +82,13 @@ export const SongForm = () => {
     const [title, setTitle] = useState(selectedSong?.title);
     const [artist, setArtist] = useState(selectedSong?.artist);
     const [album, setAlbum] = useState(selectedSong?.album);
-    const [genre, setGenre] = useState(selectedSong?.genre);
+    const [genre, setGenre] = useState(selectedSong?.genre || genres[0]);
     const [loading, setLoading] = useState(false);
 
-    // console.log("SELECTED SONG: ", songId, selectedSong);
-
-    const onTitleChange = (e: Event) => setTitle(e.target.value);
-    const onArtistChange = (e: Event) => setArtist(e.target.value);
-    const onAlbumChange = (e: Event) => setAlbum(e.target.value);
-    const onGenreChange = (e: Event) => setGenre(e.target.value);
+    const onTitleChange: ChangeEventHandler<HTMLInputElement> = (e) => setTitle(e.target?.value);
+    const onArtistChange: ChangeEventHandler<HTMLInputElement> = (e) => setArtist(e.target?.value);
+    const onAlbumChange: ChangeEventHandler<HTMLInputElement> = (e) => setAlbum(e.target?.value);
+    const onGenreChange: ChangeEventHandler<HTMLSelectElement> = (e) => setGenre(e.target?.value);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -103,18 +102,10 @@ export const SongForm = () => {
             genre
         } as ISong;
 
-        const callback = data => {
-            if(data === true)
-                useNavigate('/');    
-        };
-
-
-        const action = POST_SONG_POST(newSong, callback);
-
-        console.log(action);
-
+        const action = POST_SONG_POST(newSong);
+        
         setLoading(true);
-        dispatch(action)
+        dispatch(action);
     };
 
 
@@ -141,7 +132,8 @@ export const SongForm = () => {
                             type='text'
                             id='id-input'
                             name='_id'
-                            value={_id} />
+                            readOnly={true}
+                            defaultValue={_id} />
 
                         <label htmlFor='title-input'>
                             Title
@@ -234,3 +226,6 @@ export const SongForm = () => {
     </ModalCenter>
     )
 };
+
+
+export default SongForm;

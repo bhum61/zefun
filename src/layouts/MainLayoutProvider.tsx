@@ -1,7 +1,7 @@
 import styled, { ThemeProvider } from "styled-components"
 import NavBar from "../components/navbar/NavBar";
 import { useAppSelector } from "../hooks";
-import { pureFinalPropsSelectorFactory } from "react-redux/es/connect/selectorFactory";
+import React from "react";
 
 
 const Container = styled.div`
@@ -11,8 +11,8 @@ const Container = styled.div`
 `
 
 
-const Pane = styled.div`
-    flex: ${props => props.weight};
+const Pane = styled.div<{weight: string}>`
+    flex: ${props => props.weight || '1'};
     flex-direction: row;
     display: flex;
     gap: 1em;
@@ -47,14 +47,20 @@ const theme = {
     }
 };
 
-export default ({mainPanel: MainPanel}) => {
+type LayoutProps = {
+    children: React.ReactNode
+}
 
-    const selectedTheme = useAppSelector((state) => state.rootReducer.themeReducer.theme);
+
+export default ({children}: LayoutProps) => {
+
+    const selectedTheme: string = useAppSelector((state) => state.rootReducer.themeReducer.theme);
 
     console.log("Selected theme: ", selectedTheme);
 
+    const currentTheme = selectedTheme === 'dark'? theme.dark : theme.light;
     return (
-        <ThemeProvider theme={theme[selectedTheme]}>
+        <ThemeProvider theme={currentTheme}>
             <Container>
 
                 <Pane weight='0.5'>
@@ -62,7 +68,7 @@ export default ({mainPanel: MainPanel}) => {
                 </Pane>
 
                 <Pane weight='8'>
-                    <MainPanel/>
+                    {children}
                 </Pane>
 
             </Container>

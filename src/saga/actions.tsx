@@ -1,16 +1,14 @@
 import { createAction } from "@reduxjs/toolkit";
 import { ISong } from "../components/song/Song";
-import { useCallback } from "react";
 
 export const GET_SONGS_FETCH = createAction('SONG/GET_SONGS_FETCH');
 export const GET_SONGS_SUCCESS = createAction('SONG/GET_SONGS_SUCCESS');
 export const GET_SONGS_FAILURE = createAction('SONG/GET_SONGS_FAILURE');
 
-export const POST_SONG_POST = createAction('SONG/POST_SONG_POST', (song: ISong, callback) => {
+export const POST_SONG_POST = createAction('SONG/POST_SONG_POST', (song: ISong) => {
     
     return {
-        payload: song,
-        callback
+        payload: song
     }
 });
 export const POST_SONG_SUCCESS = createAction('SONG/POST_SONG_SUCCESS');
