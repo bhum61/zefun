@@ -31,3 +31,18 @@ export const THEME_TOGGLE = createAction('THEME/TOGGLE_THEME');
 
 export const GET_STATS_SUCCESS = createAction('SONG/GET_STATS_SUCCESS');
 export const GET_STATS_FAILURE = createAction('SONG/GET_STATS_FAILURE');
+
+
+
+export const SONG_MODAL_OPEN = createAction('SONG/MODAL_OPEN', ({data = {} as ISong}) => {
+  
+    return {
+        payload: {
+            showMe: true,
+            data
+        }
+
+    }
+});
+
+export const SONG_MODAL_CLOSE = createAction('SONG/MODAL_CLOSE');

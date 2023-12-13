@@ -1,16 +1,18 @@
-import { useAppSelector } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { ISong } from './Song';
 import { Song } from './Song';
 
-import { Link } from 'react-router-dom';
 import { styled } from 'styled-components';
 import { faPlusSquare } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { SONG_MODAL_OPEN } from '../../saga/actions';
 
 
-const StyledLink = styled(Link) `
+const StyledButton = styled.button `
     border: 1px solid #ccc;
     border-radius: 5px;
+    background: none;
+    color: ${props => props.theme.color};
 
     padding: 0.5em;
     text-decoration: none;
@@ -32,20 +34,27 @@ ul {
 `
 
 
-const SongList = () => {
-    
+const SongList = () => {    
     const songsList = useAppSelector((state) => { return state.rootReducer.songReducer.songs;});
     const error = useAppSelector((state) => {return state.rootReducer.songReducer.error;});
 
+    const dispatch = useAppDispatch();
+
+    const showModal = (song: ISong) => {
+
+        const action = SONG_MODAL_OPEN({show: true, data: song});
+        console.log("SHOW MODAL", action);
+        dispatch(action);
+    }
+
     return (
         <StyledSection>
-            { error && <p>Error: {error.message || "Unknown error"}</p>}
+            { error?.message && <p>Error: {error.message}</p>}
 
-
-            <StyledLink to='/new/song/'>
+            <StyledButton onClick={() => showModal({} as ISong)}>
                 New
                 <FontAwesomeIcon icon={faPlusSquare} />
-            </StyledLink>
+            </StyledButton>
  
             <ul>
                 {songsList.map((s: ISong) => (

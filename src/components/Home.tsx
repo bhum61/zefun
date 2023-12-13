@@ -21,7 +21,7 @@ h3 {
 export default () => {
 
     const stats = useAppSelector((state) => state.rootReducer.songReducer.stats);
-    const {count: songsCount = 0 , albums: albumsCount = 0, artists: artistsCount = 0, genres: genreCount = 0 } = stats?.stats? stats?.stats[0]:{};
+    const {count: songsCount = 0 , albums: albumsCount = 0, artists: artistsCount = 0, genres: genreCount = 0 } = stats?.stats?.length? stats?.stats[0]:{};
 
     return (
         <>

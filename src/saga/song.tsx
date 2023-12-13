@@ -1,10 +1,10 @@
 import { call, put, takeEvery } from "redux-saga/effects";
 import axios from "axios"
-import { DELETE_SONG_DELETE, DELETE_SONG_FAILURE, DELETE_SONG_SUCCESS, GET_SONGS_FAILURE, GET_SONGS_SUCCESS, GET_STATS_FAILURE, GET_STATS_SUCCESS, POST_SONG_FAILURE, POST_SONG_POST, POST_SONG_SUCCESS, PUT_SONG_SUCCESS, THEME_TOGGLE } from "./actions";
+import { DELETE_SONG_DELETE, DELETE_SONG_FAILURE, DELETE_SONG_SUCCESS, GET_SONGS_FAILURE, GET_SONGS_SUCCESS, GET_STATS_FAILURE, GET_STATS_SUCCESS, POST_SONG_FAILURE, POST_SONG_POST, POST_SONG_SUCCESS, PUT_SONG_SUCCESS, SONG_MODAL_OPEN, SONG_MODAL_CLOSE, THEME_TOGGLE } from "./actions";
 import { ISong } from "../components/song/Song";
 import { StatsType } from "../store";
 
-const API_BASE_URL = 'http://172.18.0.2:5000/api';
+const API_BASE_URL = 'http://localhost:5000/api';
 
 const axiosHeaders = {
     'X-ZEFUN-API-KEY':'qwertasdf'
@@ -34,6 +34,7 @@ const songsFetchStats = () => {
 
 const postSong = (song: ISong) => {
 
+    console.log(song);
     const axiosMethod = song._id?axios.put<ISong>:axios.post<ISong>;
 
     return axiosMethod(`${API_BASE_URL}/song${(song._id && '/'+song._id) || ''}`, song, {
@@ -124,6 +125,16 @@ function* getStatsGen() {
     }
 }
 
+function* watchModal({payload}: {payload: {data: ISong, showMe: boolean}}) {
+
+    yield put({type: SONG_MODAL_OPEN, data: payload?.data});
+}
+
+function* closeModal() {
+    
+    yield put({type: SONG_MODAL_CLOSE});
+}
+
 
 function* mySaga() {
     //load initial data
@@ -134,6 +145,8 @@ function* mySaga() {
     yield takeEvery(POST_SONG_POST, postSongGen);
     yield takeEvery(DELETE_SONG_DELETE, deleteSongGen);
     yield takeEvery(THEME_TOGGLE, toggleTheme);
+    yield takeEvery(SONG_MODAL_OPEN, watchModal);
+    yield takeEvery(SONG_MODAL_CLOSE, closeModal);
 }
 
 

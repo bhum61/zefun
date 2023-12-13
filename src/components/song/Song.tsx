@@ -1,7 +1,7 @@
 import React from "react";
 
 import { useAppDispatch } from "../../hooks";
-import { DELETE_SONG_DELETE } from "../../saga/actions";
+import { DELETE_SONG_DELETE, SONG_MODAL_OPEN } from "../../saga/actions";
 import { Link } from "react-router-dom";
 import { faTrash, faPen, faPlay } from "@fortawesome/free-solid-svg-icons";
 import { styled } from "styled-components";
@@ -57,7 +57,7 @@ const StyledSpan = styled.span `
     }
 `
 
-export const Song: React.FC<ISong> = ({_id, title, artist}) => {
+export const Song: React.FC<ISong> = ({_id, title, artist, album, genre}) => {
 
     const dispatch = useAppDispatch();
 
@@ -67,8 +67,15 @@ export const Song: React.FC<ISong> = ({_id, title, artist}) => {
         
         dispatch(action);
     }
+
+
+    const showModal = () => {
+        const action = SONG_MODAL_OPEN({showMe: true, data: {_id, title, artist, album, genre}});
+
+        dispatch(action);
+    }
     
-    return (        
+    return (
         <StyledSong>
             <span>
                 <FontAwesomeIcon icon={faPlay} />
@@ -77,7 +84,9 @@ export const Song: React.FC<ISong> = ({_id, title, artist}) => {
        
             <StyledSpan>
 
-                <Link to={`/edit/song/${_id}`}><FontAwesomeIcon icon={faPen}  /></Link>
+                <a onClick={() => showModal()}>
+                    <FontAwesomeIcon icon={faPen}  />
+                </a>
                 {/* <button className='btn btn-info' onClick={() => editHandler(_id)}>Edit</button> */}
                 <Link to='#' onClick={() => deleteHandler(_id)}>
                     <FontAwesomeIcon icon={faTrash} />

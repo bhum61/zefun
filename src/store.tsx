@@ -1,11 +1,11 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
 import createSagaMiddleware from '@redux-saga/core';
-import songReducer, { themeReducer} from './reducers';
+import songReducer from "./reducers";
 import mySaga from './saga/song';
 
 
-const rootReducer = combineReducers({songReducer, themeReducer})
+const rootReducer = combineReducers({songReducer})
 
 const sagaMiddleware = createSagaMiddleware();
 export const store = configureStore({

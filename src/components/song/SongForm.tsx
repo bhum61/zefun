@@ -1,9 +1,7 @@
 import { ISong, genres } from "./Song";
 import { useAppSelector } from "../../hooks";
 import { POST_SONG_POST } from "../../saga/actions";
-import { useParams } from "react-router-dom";
 import { styled } from "styled-components";
-import { ModalCenter  } from "../../layouts/MainLayoutProvider";
 import { ChangeEventHandler, useState } from "react";
 import { useDispatch } from "react-redux";
 
@@ -68,22 +66,20 @@ button {
 `
 
 
-const SongForm = () => {
-    const { songId } = useParams();
+const SongForm = ({selectedSongId = ''}) => {
+    console.log("SelectedSongId: ", selectedSongId);
 
     const dispatch = useDispatch();
     
     const error = useAppSelector(state => state.rootReducer.songReducer.error);
-    const selectedSong = useAppSelector<ISong | undefined>(state => state.rootReducer.songReducer.songs.find((song: ISong) => song._id === songId));
-    const networkLoading = useAppSelector(state => state.rootReducer.songReducer.loading);
+    const selectedSong = useAppSelector<ISong | undefined>(state => state.rootReducer.songReducer.songs
+        .find((song: ISong) => song._id === selectedSongId));
 
-
-    const [_id, _] = useState(songId);
+    const [_id, _] = useState(selectedSong?._id);
     const [title, setTitle] = useState(selectedSong?.title);
     const [artist, setArtist] = useState(selectedSong?.artist);
     const [album, setAlbum] = useState(selectedSong?.album);
     const [genre, setGenre] = useState(selectedSong?.genre || genres[0]);
-    const [loading, setLoading] = useState(false);
 
     const onTitleChange: ChangeEventHandler<HTMLInputElement> = (e) => setTitle(e.target?.value);
     const onArtistChange: ChangeEventHandler<HTMLInputElement> = (e) => setArtist(e.target?.value);
@@ -104,7 +100,6 @@ const SongForm = () => {
 
         const action = POST_SONG_POST(newSong);
         
-        setLoading(true);
         dispatch(action);
     };
 
@@ -116,8 +111,6 @@ const SongForm = () => {
 
 
     return (
-
-        <ModalCenter>
             <StyledDiv>
                 <>
                     {error &&
@@ -218,12 +211,11 @@ const SongForm = () => {
                         </select>
                         <hr/>
 
-                        <button type='submit' disabled={loading && networkLoading}>
+                        <button type='submit'>
                             {selectedSong?'Update':'Add'}
                         </button>
             </StyledForm>
         </StyledDiv>
-    </ModalCenter>
     )
 };
 

@@ -69,7 +69,7 @@ const StyledLabel = styled.label `
 
 export default () => {
 
-    const selectedTheme = useAppSelector((state) => state.rootReducer.themeReducer.theme);
+    const selectedTheme = useAppSelector((state) => state.rootReducer.songReducer.theme);
     const dispatch = useAppDispatch();
 
     const toggleTheme = () => {
